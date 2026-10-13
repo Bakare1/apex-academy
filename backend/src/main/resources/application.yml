@@ -3,9 +3,9 @@ spring:
     name: apex-academy-backend
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/apex_db?sslmode=disable
+    url: jdbc:postgresql://localhost:5433/apex_db?sslmode=disable
     username: apex_user
-    password: apex_password
+    password: password
     driver-class-name: org.postgresql.Driver
     hikari:
       maximum-pool-size: 15
@@ -31,5 +31,3 @@ application:
       secret-key: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
       expiration: 900000
       refresh-expiration: 604800000
-  paystack:
-    secret-key: ${PAYSTACK_SECRET_KEY:sk_test_placeholder}
