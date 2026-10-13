@@ -94,10 +94,17 @@ public class AuthService {
             if (jwtService.isTokenValid(request.refreshToken(), userDetails)) {
                 String accessToken = jwtService.generateToken(userDetails);
 
+                // Fetch the user entity to get fullName and role if needed
+                User user = userRepository.findByEmail(userEmail)
+                        .orElseThrow(() -> new RuntimeException("User not found"));
+
                 return AuthResponse.builder()
                         .accessToken(accessToken)
                         .refreshToken(request.refreshToken())
-                        .email(userDetails.getUsername())
+                        .tokenType("Bearer")
+                        .fullName(user.getFullName())
+                        .email(user.getEmail())
+                        .role(user.getRole())
                         .build();
             }
         }
