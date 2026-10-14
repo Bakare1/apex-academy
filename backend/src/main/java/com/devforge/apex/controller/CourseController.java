@@ -36,11 +36,14 @@ public class CourseController {
         return ResponseEntity.ok(createdCourse);
     }
 
-    // Restricted to users with ROLE_ADMIN or ROLE_INSTRUCTOR
+    // Restricted to users with ROLE_ADMIN or ROLE_INSTRUCTOR with secure ownership validation
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'INSTRUCTOR')")
-    public ResponseEntity<String> deleteCourse(@PathVariable Long id) {
-        // TODO: Add delete service logic when ready
-        return ResponseEntity.ok("Admin/Instructor restricted: Course " + id + " deleted successfully!");
+    public ResponseEntity<String> deleteCourse(
+            @PathVariable Long id,
+            Authentication authentication
+    ) {
+        courseService.deleteCourse(id, authentication);
+        return ResponseEntity.ok("Course with ID " + id + " deleted successfully!");
     }
 }

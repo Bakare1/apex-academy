@@ -27,6 +27,28 @@ public class CourseService {
         return courseRepository.save(course);
     }
 
+    public void deleteCourse(Long id, Authentication authentication) {
+        // 1. Handle 404: Check if course exists
+        Course course = courseRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Course with ID " + id + " not found"));
+
+        String currentUserEmail = authentication.getName();
+
+        // 2. Check if the current user is an ADMIN
+        boolean isAdmin = authentication.getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
+
+        // 3. Handle 403: If instructor, ensure they own the course
+        if (!isAdmin && !course.getInstructorEmail().equals(currentUserEmail)) {
+            throw new org.springframework.security.access.AccessDeniedException(
+                    "Access Denied: You can only delete courses that you created."
+            );
+        }
+
+        // 4. Perform secure deletion
+        courseRepository.delete(course);
+    }
+
     public List<Course> getAllCourses() {
         return courseRepository.findAll();
     }
