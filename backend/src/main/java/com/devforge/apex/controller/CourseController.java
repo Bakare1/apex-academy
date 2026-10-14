@@ -46,4 +46,16 @@ public class CourseController {
         courseService.deleteCourse(id, authentication);
         return ResponseEntity.ok("Course with ID " + id + " deleted successfully!");
     }
+
+    // Restricted to users with ROLE_ADMIN or ROLE_INSTRUCTOR with secure ownership validation
+    @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'INSTRUCTOR')")
+    public ResponseEntity<Course> updateCourse(
+            @PathVariable Long id,
+            @Valid @RequestBody CourseRequest request,
+            Authentication authentication
+    ) {
+        Course updatedCourse = courseService.updateCourse(id, request, authentication);
+        return ResponseEntity.ok(updatedCourse);
+    }
 }

@@ -52,4 +52,29 @@ public class CourseService {
     public List<Course> getAllCourses() {
         return courseRepository.findAll();
     }
+
+    public Course updateCourse(Long id, CourseRequest request, Authentication authentication) {
+        // 1. Handle 404: Check if course exists
+        Course course = courseRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Course with ID " + id + " not found"));
+
+        String currentUserEmail = authentication.getName();
+
+        // 2. Check if the current user is an ADMIN
+        boolean isAdmin = authentication.getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
+
+        // 3. Handle 403: If instructor, ensure they own the course
+        if (!isAdmin && !course.getInstructorEmail().equals(currentUserEmail)) {
+            throw new org.springframework.security.access.AccessDeniedException(
+                    "Access Denied: You can only update courses that you created."
+            );
+        }
+
+        // 4. Update fields and save
+        course.setTitle(request.title());
+        course.setDescription(request.description());
+
+        return courseRepository.save(course);
+    }
 }
