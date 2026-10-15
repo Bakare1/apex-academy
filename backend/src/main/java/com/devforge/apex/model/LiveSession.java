@@ -1,10 +1,10 @@
 package com.devforge.apex.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
-
 
 @Entity
 @Table(name = "live_sessions")
@@ -13,7 +13,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-
 public class LiveSession {
 
     @Id
@@ -30,12 +29,13 @@ public class LiveSession {
     private LocalDateTime scheduledTime;
 
     @Column(nullable = false)
-    private String roomUrlOrToken; // Native video room identifier or token
+    private String roomUrlOrToken;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "course_id", nullable = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Course course;
 
     @Column(nullable = false)
-    private String instructorEmail; // To enforce ownership validation
+    private String instructorEmail;
 }

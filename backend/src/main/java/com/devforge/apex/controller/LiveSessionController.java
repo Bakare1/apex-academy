@@ -1,6 +1,7 @@
 package com.devforge.apex.controller;
 
 import com.devforge.apex.dto.LiveSessionRequest;
+import com.devforge.apex.dto.LiveSessionResponse;
 import com.devforge.apex.model.LiveSession;
 import com.devforge.apex.service.LiveSessionService;
 import jakarta.validation.Valid;
@@ -21,7 +22,7 @@ public class LiveSessionController {
 
     // Public or Enrolled students & instructors can view scheduled live sessions for a course
     @GetMapping
-    public ResponseEntity<List<LiveSession>> getCourseSessions(@PathVariable Long courseId) {
+    public ResponseEntity<List<LiveSessionResponse>> getCourseSessions(@PathVariable Long courseId) {
         return ResponseEntity.ok(liveSessionService.getSessionsByCourse(courseId));
     }
 

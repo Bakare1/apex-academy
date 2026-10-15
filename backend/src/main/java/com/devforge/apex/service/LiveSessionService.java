@@ -1,6 +1,7 @@
 package com.devforge.apex.service;
 
 import com.devforge.apex.dto.LiveSessionRequest;
+import com.devforge.apex.dto.LiveSessionResponse;
 import com.devforge.apex.model.Course;
 import com.devforge.apex.model.LiveSession;
 import com.devforge.apex.repo.CourseRepository;
@@ -21,11 +22,14 @@ public class LiveSessionService {
     private final CourseRepository courseRepository;
 
     @Transactional(readOnly = true)
-    public List<LiveSession> getSessionsByCourse(Long courseId) {
+    public List<LiveSessionResponse> getSessionsByCourse(Long courseId) {
         if (!courseRepository.existsById(courseId)) {
             throw new RuntimeException("Course with ID " + courseId + " not found");
         }
-        return liveSessionRepository.findByCourseId(courseId);
+        return liveSessionRepository.findByCourseId(courseId)
+                .stream()
+                .map(LiveSessionResponse::fromEntity)
+                .toList();
     }
 
     public LiveSession scheduleSession(Long courseId, LiveSessionRequest request, Authentication authentication) {
