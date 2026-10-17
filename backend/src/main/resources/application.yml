@@ -4,8 +4,8 @@ spring:
 
   datasource:
     url: jdbc:postgresql://localhost:5433/apex_db?sslmode=disable
-    username: apex_user
-    password: password
+    username: ${DB_USERNAME:apex_user}
+    password: ${DB_PASSWORD:password}
     driver-class-name: org.postgresql.Driver
     hikari:
       maximum-pool-size: 15
@@ -23,7 +23,7 @@ spring:
           time_zone: UTC
 
   paystack:
-    secret-key: sk_test_your_secret_key_here
+    secret-key: ${PAYSTACK_SECRET_KEY:sk_test_fallback_placeholder}
     base-url: https://api.paystack.co
 
 server:
