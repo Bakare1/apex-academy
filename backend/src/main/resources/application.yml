@@ -22,9 +22,10 @@ spring:
         jdbc:
           time_zone: UTC
 
-  paystack:
-    secret-key: ${PAYSTACK_SECRET_KEY:sk_test_fallback_placeholder}
-    base-url: https://api.paystack.co
+# Move paystack here at the root level!
+paystack:
+  secret-key: ${PAYSTACK_SECRET_KEY:sk_test_fallback_placeholder}
+  base-url: https://api.paystack.co
 
 server:
   port: 8080

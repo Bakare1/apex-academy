@@ -1,12 +1,15 @@
 package com.devforge.apex.service;
 
+import com.devforge.apex.model.Enrollment;
 import com.devforge.apex.model.Payment;
 import com.devforge.apex.repo.PaymentRepository;
+import com.devforge.apex.repo.EnrollmentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
@@ -20,6 +23,7 @@ import java.util.UUID;
 public class PaymentService {
 
     private final PaymentRepository paymentRepository;
+    private final EnrollmentRepository enrollmentRepository;
 
     @Value("${paystack.secret-key}")
     private String paystackSecretKey;
@@ -71,6 +75,7 @@ public class PaymentService {
         }
     }
 
+    @Transactional
     public void handleWebhookEvent(Map<String, Object> payload) {
         // Handle Paystack webhook confirmation
         Map<String, Object> data = (Map<String, Object>) payload.get("data");
@@ -83,7 +88,21 @@ public class PaymentService {
             payment.setStatus("SUCCESS");
             paymentRepository.save(payment);
 
-            // TODO: Automatically enroll student in the course here!
+            // Automatically enroll student in the course upon successful payment
+            boolean alreadyEnrolled = enrollmentRepository.existsByStudentEmailAndCourseId(
+                    payment.getStudentEmail(),
+                    payment.getCourseId()
+            );
+
+            if (!alreadyEnrolled) {
+                Enrollment enrollment = Enrollment.builder()
+                        .studentEmail(payment.getStudentEmail())
+                        .courseId(payment.getCourseId())
+                        .build();
+
+                enrollmentRepository.save(enrollment);
+                System.out.println("Student " + payment.getStudentEmail() + " successfully enrolled in course " + payment.getCourseId());
+            }
         }
     }
 }
