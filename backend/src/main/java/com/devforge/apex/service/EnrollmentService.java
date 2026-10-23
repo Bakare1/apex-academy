@@ -19,4 +19,8 @@ public class EnrollmentService {
         String studentEmail = authentication.getName();
         return enrollmentRepository.findByStudentEmail(studentEmail);
     }
+
+    public boolean isStudentEnrolled(String studentEmail, Long courseId) {
+        return enrollmentRepository.existsByStudentEmailAndCourseId(studentEmail, courseId);
+    }
 }
