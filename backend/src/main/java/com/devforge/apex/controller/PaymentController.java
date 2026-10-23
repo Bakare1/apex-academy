@@ -7,7 +7,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
 import java.util.Map;
 
 @RestController
@@ -17,15 +16,14 @@ public class PaymentController {
 
     private final PaymentService paymentService;
 
-    // Student initializes course checkout
+    // Student initializes course checkout dynamically using the course's database price
     @PostMapping("/initialize/{courseId}")
     @PreAuthorize("hasRole('STUDENT')")
     public ResponseEntity<Map<String, Object>> initializePayment(
             @PathVariable Long courseId,
-            @RequestParam BigDecimal amount,
             Authentication authentication
     ) {
-        Map<String, Object> paystackResponse = paymentService.initializePayment(courseId, amount, authentication);
+        Map<String, Object> paystackResponse = paymentService.initializePayment(courseId, authentication);
         return ResponseEntity.ok(paystackResponse);
     }
 

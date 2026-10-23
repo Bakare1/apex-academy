@@ -1,7 +1,9 @@
 package com.devforge.apex.service;
 
+import com.devforge.apex.model.Course;
 import com.devforge.apex.model.Enrollment;
 import com.devforge.apex.model.Payment;
+import com.devforge.apex.repo.CourseRepository;
 import com.devforge.apex.repo.PaymentRepository;
 import com.devforge.apex.repo.EnrollmentRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +26,7 @@ public class PaymentService {
 
     private final PaymentRepository paymentRepository;
     private final EnrollmentRepository enrollmentRepository;
+    private final CourseRepository courseRepository; // Injected to fetch dynamic course price
 
     @Value("${paystack.secret-key}")
     private String paystackSecretKey;
@@ -31,9 +34,15 @@ public class PaymentService {
     @Value("${paystack.base-url}")
     private String paystackBaseUrl;
 
-    public Map<String, Object> initializePayment(Long courseId, BigDecimal amount, Authentication authentication) {
+    public Map<String, Object> initializePayment(Long courseId, Authentication authentication) {
         String studentEmail = authentication.getName();
         String reference = "DEVFORGE-" + UUID.randomUUID().toString();
+
+        // Fetch course dynamically from database to get official price
+        Course course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new RuntimeException("Course not found with ID: " + courseId));
+
+        BigDecimal amount = BigDecimal.valueOf(course.getPrice());
 
         // Save payment record as PENDING
         Payment payment = Payment.builder()
@@ -52,7 +61,7 @@ public class PaymentService {
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(paystackSecretKey);
 
-        // Convert amount to lowest currency unit (e.g., Kobo: multiply by 100)
+        // Convert amount to lowest currency unit (Kobo: multiply by 100)
         long amountInKobo = amount.multiply(BigDecimal.valueOf(100)).longValue();
 
         Map<String, Object> body = new HashMap<>();

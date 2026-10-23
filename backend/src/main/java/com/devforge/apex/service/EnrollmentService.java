@@ -36,7 +36,7 @@ public class EnrollmentService {
                     .courseId(enrollment.getCourseId())
                     .courseTitle(course != null ? course.getTitle() : "N/A")
                     .courseDescription(course != null ? course.getDescription() : "N/A")
-                    .price(0.0) // Default since price field isn't in Course entity yet
+                    .price(course != null ? course.getPrice() : 0.0) // Fetches real course price from DB
                     .instructorName(course != null ? course.getInstructorEmail() : "DevForge")
                     .enrolledAt(enrollment.getEnrolledAt())
                     .build();

@@ -25,5 +25,8 @@ public class Course {
     private String description;
 
     @Column(nullable = false)
+    private Double price;
+
+    @Column(nullable = false)
     private String instructorEmail; // Links course to the creating instructor
 }
