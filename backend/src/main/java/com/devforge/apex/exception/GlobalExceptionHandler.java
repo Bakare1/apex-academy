@@ -19,15 +19,19 @@ import java.util.Map;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<Map<String, Object>> handleAccessDeniedException(AccessDeniedException ex) {
-        Map<String, Object> body = Map.of(
-                "timestamp", LocalDateTime.now(),
-                "status", HttpStatus.FORBIDDEN.value(),
-                "error", "Forbidden",
-                "message", "Access Denied: You do not have the required role to access this resource.",
-                "validationErrors", null
-        );
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(body);
+    public ResponseEntity<ErrorResponse> handleAccessDeniedException(
+            AccessDeniedException ex,
+            HttpServletRequest request
+    ) {
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .status(HttpStatus.FORBIDDEN.value())
+                .error(HttpStatus.FORBIDDEN.getReasonPhrase())
+                .message(ex.getMessage()) // Pulls the exact message from LessonService
+                .path(request.getRequestURI())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
     }
     // Handle Bean Validation errors (e.g., @NotBlank, @Email, @Size)
     @ExceptionHandler(MethodArgumentNotValidException.class)
