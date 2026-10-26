@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'http/http.dart' as http;
+import 'package:http/http.dart' as http; // <-- Added 'package:' prefix here
 import '../models/course.dart';
 import '../models/lesson.dart';
 import '../models/api_error.dart';
