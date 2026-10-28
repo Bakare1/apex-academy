@@ -6,7 +6,7 @@ import '../models/api_error.dart';
 
 class ApiService {
   // Use http://10.0.2.2:8080 for Android Emulator, or localhost:8080 for Desktop/Web
-  static const String baseUrl = 'http://10.0.2.2:8080/api/v1';
+  static const String baseUrl = 'http://localhost:8080/api/v1';
 
   // Fetch all courses
   Future<List<Course>> fetchCourses() async {
